@@ -2,34 +2,48 @@
 # Contributor: Andre Klitzing <aklitzing () gmail () com>
 # Contributor: Simon Sobisch <simonsobisch () gnu () org>
 
-pkgname=lcov
+pkgname='lcov'
 epoch=1
-pkgver=1.16
+pkgver=2.5
 pkgrel=1
-pkgdesc="front-end for GCC's coverage testing tool gcov"
+pkgdesc="Front-end for GCC's coverage testing tool gcov"
 arch=('any')
-url="https://github.com/linux-test-project/lcov"
+url='https://github.com/linux-test-project/lcov'
 msys2_repository_url='https://github.com/linux-test-project/lcov'
+msys2_references=(
+  'archlinux: lcov'
+)
 license=('spdx:GPL-2.0-or-later')
-depends=('perl'
-         'perl-JSON'
-         'perl-PerlIO-gzip')
-source=("https://github.com/linux-test-project/lcov/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.gz"
-        "001-mingw-lcov1.12-handle-equals-signs.patch"
-        "002-mingw-lcov1.12-fix-undef-behaviour.patch")
-sha256sums=('987031ad5528c8a746d4b52b380bc1bffe412de1f2b9c2ba5224995668e3240b'
-            '54728aa4e244d3662c65ba91fb486dc1d5c64d9d55745ee334c4131109dc233c'
-            'ceaf41f7cc9cea5a6fc4b0385ffef10d1ab8812acd2a5b16dcd8d7bca7120488')
-
-prepare() {
-  cd "${srcdir}/${pkgname}-${pkgver}"
-
-  patch -p1 -i ${srcdir}/001-mingw-lcov1.12-handle-equals-signs.patch
-  patch -p1 -i ${srcdir}/002-mingw-lcov1.12-fix-undef-behaviour.patch
-}
+backup=(
+  'etc/lcovrc'
+)
+depends=(
+  'perl'
+  'perl-Capture-Tiny'
+  # 'perl-DateTime'
+  # 'perl-Devel-Cover'
+  'perl-JSON'
+  # 'perl-Memory-Process'
+  'perl-PerlIO-gzip'
+)
+makedepends=(
+  # 'python-sphinx'
+  # 'python-sphinx_rtd_theme'
+)
+optdepends=(
+  # unavailable
+  # 'perl-GD: render frames in html output'
+  # 'perl-JSON-XS: faster JSON parsing than built in JSON:PP'
+  'python: enable extra support scripts'
+  # 'python-coverage: enable python coverage reporting'
+  # 'python-xlsxwriter: generate spreadsheet reports'
+)
+source=("https://github.com/linux-test-project/${pkgname}/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('7e5e5a154bd5f3557659c328cab376764e7abd238bb403c424472c296b175126')
 
 package() {
-  cd "${srcdir}/${pkgname}-${pkgver}"
+  cd "${pkgname}-${pkgver}"
 
-  make PREFIX="/usr" DESTDIR="${pkgdir}" install
+  # no_doc unavailable in 2.5
+  make PREFIX=/usr CFG_DIR=/etc DESTDIR="${pkgdir}" LCOV_NO_DOC=1 install
 }
